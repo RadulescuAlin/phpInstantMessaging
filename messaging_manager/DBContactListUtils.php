@@ -1,6 +1,7 @@
 <?php
 
 	include 'DBConnect.php';
+	include 'DBUserUtils.php';
 
 
 
@@ -19,10 +20,26 @@
 	/**
 	 * Adds a user to another user's contact list.
 	 * Returns:
-	 *     1: A request has been sent to the other user
+	 *     Request ID: A request has been sent to the other user
 	 *     0: An error occured, contact already exists, etc.
 	 */
 	function addToContactList( $user, $newContact, $confirmed = 0 ) {
+		$db = getMessagingDb();
+
+		$query = "INSERT INTO contact_list (from_user, to_user, content) "
+				. "VALUES (:from, :to, :content);";
+		$statement = $db->prepare($query);
+		$statement->bindParam(":from", $from);
+		$statement->bindParam(":to", $to);
+		$statement->bindParam(":content", substr($message , 0, 2048 ));
+		$statement->execute();
+		$this_last_insert = $db->lastInsertId();
+
+		if( $this_last_insert > $lastInsert ) {
+			return $this_last_insert;
+		}
+
+		return 0;
 		return 0;
 	}
 

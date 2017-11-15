@@ -5,7 +5,7 @@
 	 * TODO: Would be cool to have a Singleton or a Factory, something more enterprise-ish.
 	 */
 	function getMessagingDb() {
-		return new PDO('sqlite:..\messaging_db\messaging_project.db');
+		return new PDO('sqlite:C:/xampp/messaging_db/messaging_project.db');
 	}
 
 ?>

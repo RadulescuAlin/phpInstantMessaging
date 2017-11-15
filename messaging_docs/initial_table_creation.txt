@@ -4,51 +4,33 @@ CREATE TABLE user (
 	username               CHAR(20)   UNIQUE,
 	salt                   CHAR(128),
 	hashed_pwd             CHAR(128),
-	last_password_change   TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	date_created           TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL
+	email                  CHAR(128)  NOT NULL,
+	last_password_change   INTEGER NOT NULL, -- EPOCH time
+	date_created           INTEGER NOT NULL  -- EPOCH time
 );
 CREATE INDEX username ON user (username);
 
 
-INSERT INTO user (username, salt, hashed_pwd)
-VALUES ("username",
-		"OneOfTheWorstSaltsThereExistedInTheHistoryOfSaltsMaybeEverPeriodOneOfTheWorstSaltsThereExistedInTheHistoryOfSaltsMaybeEverPeriod",
-		"7948b90a990e86aac0169a28b2fa04094887fbe3ea243cc23eeb07b845c10923794e5388a8fd0cb0ce73641c458d75bf40a2fd1f86cb2bb9b25cbf59c040a559"
-); -- password is "password"
-
-INSERT INTO user (username, salt, hashed_pwd)
-VALUES ("username_was_taken",
-		"TheSecondWorstSaltThereExistedInTheHistoryOfSaltsMaybeEverPeriodTheSecondWorstSaltThereExistedInTheHistoryOfSaltsMaybeEverPeriod",
-		"60c34c8e9e046e5df2baaf1cc55f4f14ed43683fdbfdc8fd8eed4e9fdcd563ad6586a04d08fddc8928a1756bce2a3fe51d5267f0dc527e9a3ab8657b9c0b7980"
-); -- password is "12345678"
-
-
-
-
 -- Table that stores user contact list: Pairs of user ids meaning contact_id is a contact of user_id
-CREATE TABLE contact_list {
+CREATE TABLE contact_list (
 	id           INTEGER    PRIMARY KEY AUTOINCREMENT,
 	user_id      INTEGER,
 	contact_id   INTEGER,
 	date_created TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	confirmed    INTEGER    DEFAULT 0 NOT NULL,
 
 	UNIQUE(user_id, contact_id)
-};
-
-
-INSERT INTO contact_list (user_id, contact_id)
-VALUES (1, 2);
-
-
+);
 
 
 -- Table that stores messages users have sent each other
-CREATE TABLE message {
+CREATE TABLE message (
 	id           INTEGER    PRIMARY KEY AUTOINCREMENT,
-	from         INTEGER,
-	to           INTEGER,
-	date_created TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL,
-};
-CREATE INDEX message_sender   ON message (from);
-CREATE INDEX message_receiver ON message (to);
-
+	from_user    INTEGER,
+	to_user      INTEGER,
+	content      TEXT(2048),
+	seen         INTEGER,
+	date_created TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+CREATE INDEX message_sender   ON message (from_user);
+CREATE INDEX message_receiver ON message (to_user);

@@ -7,7 +7,7 @@
 	/**
 	 * This file contains utility functions to simplify work with the user DB table.
 	 * Exports functions to login, sign up, change password, various status queries.
-	 * - boolean isUsernameTaken(String username)
+	 * - boolean getUser(String username)
 	 * - boolean checkCredentials(String username, String password)
 	 * - boolean checkExpiredSession(String username, String sessionStart)
 	 * - boolean createUser(String username, String password)
@@ -17,19 +17,24 @@
 
 
 	/**
-	 * Checks if a username is already taken
+	 * Returns user data
 	 * Returns:
-	 *     1 if the username is taken
-	 *     0 otherwise.
+	 *     User object, if the username is taken
+	 *     null otherwise.
 	 */
-	function isUsernameTaken( $username ) {
+	function getUser( $username ) {
 		$db = getMessagingDb();
-		$query = "SELECT count(*) FROM user WHERE username = :username;";
+		$query = "SELECT * FROM user WHERE username = :username;";
 		$statement = $db->prepare($query);
 		$statement->bindParam(":username", $username);
 		$statement->execute();
 		$result = $statement->fetchAll();
-		return $result[0]['count(*)'];
+		if($result && $result[0]) {
+			//TODO print and inspect
+			return $result[0];
+		}
+
+		return null;
 	}
 
 
@@ -105,6 +110,8 @@
 	 * Returns:
 	 *     1: This session should be terminated. A password change has occured since last login.
 	 *     0: This session can remain active. No password change has occured since last login.
+	 *
+	 * TODO: This could really use some caching. A DB framework would be cool.
 	 */
 	function checkExpiredSession($username, $sessionStart) {
 		$db = getMessagingDb();
@@ -119,10 +126,6 @@
 			$lastPasswordChange = $result[0]['last_password_change'];
 
 			// If the last password change happened before this session start, stay logged in.
-
-			// TODO: Compare timestamps.
-			echo "lastPasswordChange: " . $lastPasswordChange . "<br>";
-			echo "sessionStart: " . $sessionStart . "<br>";
 			if($lastPasswordChange <= $sessionStart) {
 				return 0;
 			}
@@ -139,8 +142,8 @@
 	 *     1: The user has been succesfully created.
 	 *     0: An error occured. (username taken or server error)
 	 */
-	function createUser( $username, $password ) {
-		if( isUsernameTaken($username) ) {
+	function createUser( $username, $password, $email ) {
+		if( getUser($username) ) {
 			return 0;
 		}
 
@@ -148,15 +151,21 @@
 		$hash = generatePasswordHash($password, $salt);
 
 		$db = getMessagingDb();
-		$query = "INSERT INTO user (username, salt, hashed_pwd) "
-				. "VALUES (:username, :salt, :hashed_pwd);";
+		$time = time();
+		$query = "INSERT INTO user "
+				. "(username, email, salt, hashed_pwd, last_password_change, date_created) "
+				. "VALUES "
+				. "(:username, :email, :salt, :hashed_pwd, :time, :time);";
 		$statement = $db->prepare($query);
 		$statement->bindParam(":username", $username);
+		$statement->bindParam(":email", $email);
 		$statement->bindParam(":salt", $salt);
 		$statement->bindParam(":hashed_pwd", $hash);
-		$statement->execute();
-
-		return 1;
+		$statement->bindParam(":time", $time);
+		if( $statement->execute() ) {
+			return 1;
+		}
+		return 0;
 	}
 
 
