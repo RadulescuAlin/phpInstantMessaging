@@ -1,7 +1,7 @@
 <?php
 
-	include 'DBConnect.php';
-	include 'DBUserUtils.php';
+	include_once('DBConnect.php');
+	include_once('DBUserUtils.php');
 
 
 
@@ -40,7 +40,6 @@
 		}
 
 		return 0;
-		return 0;
 	}
 
 
@@ -52,7 +51,7 @@
 	 *     0: An error occured, they were not contacts, etc.
 	 */
 	function removeFromContactList( $username ) {
-		return 0
+		return 0;
 	}
 
 
@@ -73,13 +72,27 @@
 	/**
 	 * Fetch all contacts this user has.
 	 * Returns:
-	 *     An array of user objects.
+	 *     An array of <user_id, user_name> pairs.
 	 *     An empty array, if there are no contacts.
 	 * 
 	 * TODO (Medium priority): Paginate
 	 */
-	function fetchAllContacts( $user ) {
-		return 0;
+	function fetchAllContacts( $user_id ) {
+		$db = getMessagingDb();
+		$query = ""
+				. "SELECT user.id, user.username "
+				. "FROM contact_list AS contacts "
+				. "JOIN user AS user "
+				. "  ON contacts.contact_id = user.id "
+				. "WHERE contacts.user_id = :user_id "
+				. "  AND contacts.confirmed = 1 "
+				. ";";
+		$statement = $db->prepare($query);
+		$statement->bindParam(":user_id", $user_id);
+		$statement->execute();
+		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+		return $result;
 	}
 
 
@@ -97,3 +110,27 @@
 		return 0;
 	}
 
+
+
+	/**
+	 * Checks if 'contact' is a contact of 'user'
+	 * Returns:
+	 *     1 if the 'contact' is in user's contact list (and approved)
+	 *     0 otherwise
+	 */
+	function isContactOf( $user_id, $contact_id ) {
+		$db = getMessagingDb();
+		$query = ""
+				. "SELECT count(*) FROM contact_list "
+				. "WHERE user_id = :user_id "
+				. "  AND contact_id = :contact_id "
+				. "  AND confirmed = 1 "
+				. ";";
+		$statement = $db->prepare($query);
+		$statement->bindParam(":user_id", $user_id);
+		$statement->bindParam(":contact_id", $contact_id);
+		$statement->execute();
+		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+		return $result[0]["count(*)"];
+	}

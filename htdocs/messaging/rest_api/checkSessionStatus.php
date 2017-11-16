@@ -1,6 +1,6 @@
 <?php
 
-	include '..\..\messaging_manager\DBUserUtils.php';
+	include(dirname(__DIR__) . '\..\..\messaging_manager\DBUserUtils.php');
 
 	/**
 	 * This file is supposed to be included by any other file which expects

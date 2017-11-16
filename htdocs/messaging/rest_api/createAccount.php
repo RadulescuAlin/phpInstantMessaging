@@ -24,8 +24,8 @@
 	if( createUser($username, $password, $email) ) {
 		$_SESSION['username'] = $username;
 		$_SESSION['sessionStart'] = time();
-		//header("Location: /messaging/messages.php");
-		//die();
+		header("Location: /messaging/messages.php");
+		die();
 	}
 
 	//header("Location: /messaging/login.php");

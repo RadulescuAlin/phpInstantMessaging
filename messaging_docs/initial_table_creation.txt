@@ -34,3 +34,16 @@ CREATE TABLE message (
 );
 CREATE INDEX message_sender   ON message (from_user);
 CREATE INDEX message_receiver ON message (to_user);
+
+
+
+------
+
+After creating multiple accounts, make some contact connections
+INSERT INTO
+	contact_list(user_id, contact_id, confirmed)
+VALUES
+	(1, 2, 1),
+	(1, 3, 1),
+	(2, 1, 1),
+	(3, 1, 1);

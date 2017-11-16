@@ -1,6 +1,6 @@
 <?php
 
-	include '..\..\messaging_manager\DBUserUtils.php';
+	include_once(dirname(__DIR__) . '/../messaging_manager/DBUserUtils.php');
 
 	session_start();
 
@@ -19,21 +19,23 @@
 <html>
 
 	<table style="margin-left:auto; margin-right:auto;">
-		<td>
-			<form action='rest_api/startSession.php' method='POST'>
-				Username: <input type='text' name='username'><br>
-				Password: <input type='password' name='password'><br>
-				<input type='submit' value='Log in'><br>
-			</form>
-		</td>
-		<td>
-			<form action='rest_api/createAccount.php' method='POST'>
-				Username: <input type='text'     name='username'><br>
-				Password: <input type='password' name='password'><br>
-				Email:    <input type='email'    name='email'><br>
-				<input type='submit' value='Sign up'><br>
-			</form>
-		</td>
+		<tr>
+			<td>
+				<form action='rest_api/startSession.php' method='POST'>
+					Username: <input type='text' name='username'><br>
+					Password: <input type='password' name='password'><br>
+					<input type='submit' value='Log in'><br>
+				</form>
+			</td>
+			<td>
+				<form action='rest_api/createAccount.php' method='POST'>
+					Username: <input type='text'     name='username'><br>
+					Password: <input type='password' name='password'><br>
+					Email:    <input type='email'    name='email'><br>
+					<input type='submit' value='Sign up'><br>
+				</form>
+			</td>
+		</tr>
 	</table>
 
 </html>

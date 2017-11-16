@@ -1,6 +1,6 @@
 <?php
 
-	include 'DBConnect.php';
+	include_once('DBConnect.php');
 
 
 
@@ -15,12 +15,12 @@
 
 
 	/**
-	 * Sends a message from a user to a different user.
+	 * Sends a message from a user to another.
 	 * Returns:
-	 *     0 if there was an error.
-	 *     Positive integer: Message ID (the message was sent)
+	 *     MessageID (positive int) in case of success
+	 *     0: fail
 	 */
-	function sendMessage( $from, $to, $message ) {
+	function sendMessage( $from_id, $to_id, $message ) {
 		$db = getMessagingDb();
 
 		$lastInsert = $db->lastInsertId();
@@ -28,14 +28,14 @@
 		$query = "INSERT INTO message (from_user, to_user, content) "
 				. "VALUES (:from, :to, :content);";
 		$statement = $db->prepare($query);
-		$statement->bindParam(":from", $from);
-		$statement->bindParam(":to", $to);
+		$statement->bindParam(":from", $from_id);
+		$statement->bindParam(":to", $to_id);
 		$statement->bindParam(":content", substr($message , 0, 2048 ));
 		$statement->execute();
-		$this_last_insert = $db->lastInsertId();
+		$id_of_this_message = $db->lastInsertId();
 
-		if( $this_last_insert > $lastInsert ) {
-			return $this_last_insert;
+		if( $id_of_this_message > $lastInsert ) {
+			return $id_of_this_message;
 		}
 
 		return 0;
@@ -55,7 +55,7 @@
 	 */
 	function getLastMessages( $user, $interlocutor, $count) {
 		$db = getMessagingDb();
-		$query = "" .
+		$query = ""
 				. "SELECT id, from_user, to_user, content "
 				. "FROM message "
 				. "WHERE ( from_user = :user AND   to_user = :interlocutor ) "
@@ -68,7 +68,7 @@
 		$statement->bindParam(":interlocutor", $interlocutor);
 		$statement->bindParam(":count", $count);
 		$statement->execute();
-		$result = $statement->fetchAll();
+		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 		//TODO print and inspect result
 		return $result;
@@ -91,7 +91,7 @@
 	 */
 	function fetchNewMessages( $user, $interlocutor, $afterId ) {
 		$db = getMessagingDb();
-		$query = "" .
+		$query = ""
 				. "SELECT id, from_user, to_user, content "
 				. "FROM message "
 				. "WHERE id > :after_id "
@@ -107,7 +107,7 @@
 		$statement->bindParam(":interlocutor", $interlocutor);
 		$statement->bindParam(":after_id", $afterId);
 		$statement->execute();
-		$result = $statement->fetchAll();
+		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 		//TODO print and inspect result
 		return $result;

@@ -1,6 +1,6 @@
 <?php
 
-	include 'C:\xampp\messaging_manager\DBUserUtils.php';
+	include_once(dirname(__DIR__) . '/../../messaging_manager/DBUserUtils.php');
 
 
 
