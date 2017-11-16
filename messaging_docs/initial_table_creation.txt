@@ -1,3 +1,6 @@
+sqlite3 messaging_db\messaging_project.db
+
+
 -- Table that stores all the users
 CREATE TABLE user (
 	id                     INTEGER    PRIMARY KEY AUTOINCREMENT,
@@ -26,8 +29,8 @@ CREATE TABLE contact_list (
 -- Table that stores messages users have sent each other
 CREATE TABLE message (
 	id           INTEGER    PRIMARY KEY AUTOINCREMENT,
-	from_user    INTEGER,
-	to_user      INTEGER,
+	from_user    INTEGER    NOT NULL,
+	to_user      INTEGER    NOT NULL,
 	content      TEXT(2048),
 	seen         INTEGER,
 	date_created TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL

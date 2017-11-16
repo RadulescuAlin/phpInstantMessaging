@@ -6,6 +6,7 @@
 
 <html>
 	<head>
+		<script src="js/httpUtils.js"></script>
 		<script src="js/contactList.js"></script>
 		<script src="js/messagesPanel.js"></script>
 	</head>
@@ -25,12 +26,12 @@
 		</tr>
 		<tr height=10%>
 			<td colspan=2>
-				<textarea name="messageTextArea" rows="3" style="width: 100%; height: 100%; resize: none;" ></textarea>
+				<textarea id="txtAreaMessage" rows="3" style="width: 100%; height: 100%; resize: none;" ></textarea>
 			</td>
 		</tr>
 		<tr>
 			<td colspan=2 align="center">
-				<button >Send</button>
+				<button id="btnSendMessage" onclick="sendMessage()">Send</button>
 			</td>
 		</tr>
 	</table>

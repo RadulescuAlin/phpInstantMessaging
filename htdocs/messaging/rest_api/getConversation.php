@@ -7,21 +7,20 @@
 
 	// Get request params
 	$userName = $_SESSION['username'];
-	$interlocutorName = $_GET['withUser'];
+	$interlocutorId = $_GET['withUser'];
 
-	// Identify the two users
+	// Identify the user
 	$user = getUser($userName);
-	$interlocutor = getUser($interlocutorName);
 
 	// Check if we're attempting to get a conversation with a user in our contact list.
-	$isContact = isContactOf($user["id"], $interlocutor["id"]);
+	$isContact = isContactOf($user["id"], $interlocutorId);
 	if(!$isContact) {
 		echo json_encode([]);
 		die();
 	}
 
 	// Fetch the conversation
-	$conversation = getLastMessages($user["id"], $interlocutor["id"], 50);
+	$conversation = getLastMessages($user["id"], $interlocutorId, 50);
 	echo json_encode($conversation);
 
 ?>

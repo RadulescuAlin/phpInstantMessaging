@@ -30,7 +30,8 @@
 		$statement = $db->prepare($query);
 		$statement->bindParam(":from", $from_id);
 		$statement->bindParam(":to", $to_id);
-		$statement->bindParam(":content", substr($message , 0, 2048 ));
+		$messageTrunc = substr($message , 0, 2048 );
+		$statement->bindParam(":content", $messageTrunc );
 		$statement->execute();
 		$id_of_this_message = $db->lastInsertId();
 
@@ -70,8 +71,7 @@
 		$statement->execute();
 		$result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-		//TODO print and inspect result
-		return $result;
+		return array_reverse($result);
 	}
 
 
